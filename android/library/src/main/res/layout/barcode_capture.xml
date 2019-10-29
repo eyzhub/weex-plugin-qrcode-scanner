@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/topLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#19191A"
+    android:keepScreenOn="true"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:layout_weight="1"
+        android:background="#1B1B1B"
+        android:gravity="center"
+        android:text="@string/qr_heading"
+        android:textColor="#E6E4E5"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        tools:text="Please scan the QR code" />
+
+    <org.weex.plugin.pluginqrcodescanner.camera.CameraSourcePreview
+        android:id="@+id/preview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
+
+    </org.weex.plugin.pluginqrcodescanner.camera.CameraSourcePreview>
+
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="#304FFE"
+        android:text="Cancel"
+        android:textColor="#E6E6E9" />
+</LinearLayout>

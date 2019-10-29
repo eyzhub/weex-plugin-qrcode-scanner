@@ -1,4 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="org.weex.plugin.pluginqrcodescanner">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <application>
+        <activity
+            android:name=".barcode.BarcodeCaptureActivity"
+            android:theme="@style/AppTheme"/>
+    </application>
 </manifest>
