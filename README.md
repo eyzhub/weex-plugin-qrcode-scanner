@@ -1,7 +1,11 @@
 # weex-plugin-qrcode-scanner
 Allows Weex applications to read open camera and return QR code for iOS and Android
 
-## Android example
+## Android
+
+- Uses the package `com.google.android.gms.vision`
+
+### Example
 
 ```
 const pluginQrcodeScanner = weex.requireModule('pluginQrcodeScanner');
