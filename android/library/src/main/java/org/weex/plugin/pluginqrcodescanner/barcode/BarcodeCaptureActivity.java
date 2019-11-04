@@ -34,8 +34,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -85,6 +88,29 @@ public final class BarcodeCaptureActivity extends Activity
 //        requestCameraPermission();
         createCameraSource(autoFocus, useFlash);
 
+        final ImageView closeView = findViewById(R.id.close);
+
+
+        closeView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "clicked");
+                close(CommonStatusCodes.CANCELED);
+            }
+        });
+
+        closeView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    v.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ripple));
+                } else {
+                    v.setBackground(null);
+
+                }
+            }
+        });
+
         /*
         // Check for the camera permission before accessing the camera.  If the
         // permission is not granted yet, request permission.
@@ -97,12 +123,20 @@ public final class BarcodeCaptureActivity extends Activity
         */
     }
 
+    private void close(int reason) {
+        setResult(reason, null);
+        finish();
+    }
+
     @Override
     public void onDetectedQrCode(Barcode barcode) {
         if (barcode != null) {
             Intent intent = new Intent();
             intent.putExtra(BarcodeObject, barcode);
             setResult(CommonStatusCodes.SUCCESS, intent);
+            finish();
+        } else {
+            setResult(CommonStatusCodes.ERROR, null);
             finish();
         }
     }
