@@ -2,8 +2,8 @@
 
 Pod::Spec.new do |s|
   s.name         = "PluginQrcodeScanner"
-  s.version      = "0.0.1"
-  s.summary      = "Weex Plugin"
+  s.version      = "0.1.0"
+  s.summary      = "Weex Plugin for Scanning and decoding QR codes"
 
   s.description  = <<-DESC
                    Weexplugin Source Description
@@ -17,10 +17,10 @@ Pod::Spec.new do |s|
     LICENSE
   }
   s.authors      = {
-                     "yourname" =>"youreamail"
+                     "dseeker" =>"siqueira@eyzmedia.de"
                    }
   s.platform     = :ios
-  s.ios.deployment_target = "8.0"
+  s.ios.deployment_target = "9.0"
 
   s.source       = { :git => 'please input the url of your code in github', :tag => 'please input you github tag' }
   s.source_files  = "ios/Sources/*.{h,m,mm}"
@@ -28,4 +28,5 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.dependency "WeexPluginLoader"
   s.dependency "WeexSDK"
+  s.dependency "MTBBarcodeScanner"
 end

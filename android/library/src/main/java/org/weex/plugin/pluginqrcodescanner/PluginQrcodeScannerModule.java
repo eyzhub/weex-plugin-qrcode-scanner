@@ -9,6 +9,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.alibaba.weex.plugin.annotation.WeexModule;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -27,10 +30,10 @@ public class PluginQrcodeScannerModule extends WXModule {
     private static final String TAG = "ScannerModule";
 
     // Define the callback
-    JSCallback jsCallback;
+    private JSCallback jsCallback;
 
     // Current activity
-    Activity thisActivity;
+    private Activity thisActivity;
 
     // Our repsonse map
     private Map<String, Object> response = new HashMap();
@@ -49,20 +52,31 @@ public class PluginQrcodeScannerModule extends WXModule {
         callback.invoke(param);
     }
 
-    @JSMethod(uiThread = true)
-    public void show() {
-        Log.d(TAG, "Showing!!!");
+    private String getParam(String params, String key) {
+        String output;
 
-        Toast.makeText(
-                mWXSDKInstance.getContext(),
-                "Module pluginQrcodeScanner Loaded",
-                Toast.LENGTH_SHORT
-        ).show();
+        JSONObject json = new JSONObject();
+        try {
+            json = new JSONObject(params);
+            output = (String) json.get(key);
+        } catch (Throwable t) {
+            output = null;
+            Log.e("-> getParam", "Could not parse malformed JSON: \"" + json + "\"");
+        }
+
+        return output;
+    }
+
+    @JSMethod(uiThread = true)
+     public void show(String params) throws JSONException {
+        Log.d(TAG, "-> show");
+        String message = this.getParam(params, "message");
+        Toast.makeText(mWXSDKInstance.getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     @JSMethod(uiThread = true)
     public void scan(JSCallback jsCallback) {
-        Log.d(TAG, "Scanning");
+        Log.d(TAG, "-> Scanning");
 
         this.jsCallback = jsCallback;
         this.thisActivity = ((Activity) mWXSDKInstance.getContext());
@@ -86,7 +100,7 @@ public class PluginQrcodeScannerModule extends WXModule {
 
         Toast.makeText(mWXSDKInstance.getContext(), "Permission to use Camera is required", Toast.LENGTH_SHORT).show();
 
-        Log.d("response", response.toString());
+        Log.d("-> response", response.toString());
 
         this.jsCallback.invoke(response);
     }
@@ -124,10 +138,10 @@ public class PluginQrcodeScannerModule extends WXModule {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d("requestCode", String.valueOf(requestCode));
+        Log.d("-> requestCode", String.valueOf(requestCode));
 
         if (data != null) {
-            Log.d("response", data.toString());
+            Log.d("-> response", data.toString());
         }
 
         if (requestCode == 101) {
@@ -142,7 +156,7 @@ public class PluginQrcodeScannerModule extends WXModule {
                     response.put("code", qrcode);
                     response.put("success", true);
 
-                    Toast.makeText(mWXSDKInstance.getContext(), "Success", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mWXSDKInstance.getContext(), "Success "+response.toString(), Toast.LENGTH_SHORT).show();
                 }
             } else {
                 response.put("code", null);
@@ -153,9 +167,9 @@ public class PluginQrcodeScannerModule extends WXModule {
             response.put("success", false);
         }
 
-        Log.d("response", response.toString());
+        Log.d("-> response", response.toString());
 
-        this.jsCallback.invoke(response);
+        if (this.jsCallback != null) this.jsCallback.invoke(response);
     }
 
 }
