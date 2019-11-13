@@ -6,6 +6,9 @@
 		<div @click="createAction" class="button">
 			<text style="color:#fff">Click Me!</text>
 		</div>
+		<div class="a-btn">
+      		<text>Result: {{content}}</text>
+    	</div>
   </div>
 </template>
 
@@ -45,10 +48,22 @@
 	module.exports = {
 		data: {
 			logo: 'http://img1.vued.vanthink.cn/vued08aa73a9ab65dcbd360ec54659ada97c.png',
-		},
-		methods: {
+			content: "No response",
+		},		
+		methods: {			
 			createAction: function() {
-				pluginQrcodeScanner.show();
+				let that = this;
+	  			that.content = String('Processing');
+				// pluginQrcodeScanner.scan();
+
+				pluginQrcodeScanner.scan(function(resp) {
+					console.log(resp);										
+					that.content = String(resp.code);
+					console.log("that");
+					console.log(resp.success);
+					console.log("done");
+				});
+
 			}
 		}
 	}
