@@ -7,7 +7,7 @@
     <string name="barcode_error_format">"Error reading barcode: %1$s"</string>
 
     <!-- Strings related to barcode scanner -->
-    <string name="qr_heading" translatable="false">Please scan the QR code</string>
+    <string name="qr_heading" translatable="false">Scan QR code</string>
     <string name="ok">OK</string>
     <string name="permission_camera_rationale">Permission to access the Camera is required</string>
     <string name="no_camera_permission">This application cannot run because it does not have the camera permission.</string>

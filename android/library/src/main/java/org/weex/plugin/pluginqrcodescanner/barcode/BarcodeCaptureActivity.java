@@ -102,12 +102,12 @@ public final class BarcodeCaptureActivity extends Activity
         closeView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    v.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ripple));
-                } else {
-                    v.setBackground(null);
-
-                }
+//                if (hasFocus) {
+//                    v.setBackground(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ripple));
+//                } else {
+//                    v.setBackground(null);
+//
+//                }
             }
         });
 

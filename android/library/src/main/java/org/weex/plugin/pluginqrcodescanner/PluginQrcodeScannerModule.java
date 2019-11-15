@@ -9,6 +9,9 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.alibaba.weex.plugin.annotation.WeexModule;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -27,13 +30,13 @@ public class PluginQrcodeScannerModule extends WXModule {
     private static final String TAG = "ScannerModule";
 
     // Define the callback
-    JSCallback jsCallback;
+    private JSCallback jsCallback;
 
     // Current activity
-    Activity thisActivity;
+    private Activity thisActivity;
 
     // Our repsonse map
-    private Map<String, Object> response = new HashMap();
+    // private Map<String, Object> response = new HashMap();
 
     //sync ret example
     //TODO: Auto-generated method example
@@ -49,44 +52,55 @@ public class PluginQrcodeScannerModule extends WXModule {
         callback.invoke(param);
     }
 
-    @JSMethod(uiThread = true)
-    public void show() {
-        Log.d(TAG, "Showing!!!");
+    private String getParam(String params, String key) {
+        String output;
 
-        Toast.makeText(
-                mWXSDKInstance.getContext(),
-                "Module pluginQrcodeScanner Loaded",
-                Toast.LENGTH_SHORT
-        ).show();
+        JSONObject json = new JSONObject();
+        try {
+            json = new JSONObject(params);
+            output = (String) json.get(key);
+        } catch (Throwable t) {
+            output = null;
+            Log.e("-> getParam", "Could not parse malformed JSON: \"" + json + "\"");
+        }
+
+        return output;
     }
 
     @JSMethod(uiThread = true)
-    public void scan(JSCallback jsCallback) {
-        Log.d(TAG, "Scanning");
+     public void show(String params) throws JSONException {
+        Log.d(TAG, "-> show");
+        String message = this.getParam(params, "message");
+        Toast.makeText(mWXSDKInstance.getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @JSMethod(uiThread = true)
+    public void scanQR(JSCallback jsCallback) {
+        Log.d(TAG, "-> Scanning");
 
         this.jsCallback = jsCallback;
         this.thisActivity = ((Activity) mWXSDKInstance.getContext());
 
-        if (ContextCompat.checkSelfPermission(thisActivity,
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            thisActivity.requestPermissions(new String[]{Manifest.permission.CAMERA}, 1011);
-        } else {
-            this.startActivity();
-        }
+       if (ContextCompat.checkSelfPermission(thisActivity,
+               Manifest.permission.CAMERA)
+               != PackageManager.PERMISSION_GRANTED) {
+           thisActivity.requestPermissions(new String[]{Manifest.permission.CAMERA}, 1011);
+       } else {
+           this.startActivity();
+       }
     }
 
     /**
      * Handle when user denies Camera permission.
      */
     private void handleNoPermission() {
-        response.put("code", null);
-        response.put("success", false);
+        Map<String, Object> response = new HashMap();
+        response.put("cancel", true);
         response.put("details", "No permission");
 
-        Toast.makeText(mWXSDKInstance.getContext(), "Permission to use Camera is required", Toast.LENGTH_SHORT).show();
+        // Toast.makeText(mWXSDKInstance.getContext(), "This App Would like to Access the Camera", Toast.LENGTH_SHORT).show();
 
-        Log.d("response", response.toString());
+        Log.d("-> response", response.toString());
 
         this.jsCallback.invoke(response);
     }
@@ -123,11 +137,11 @@ public class PluginQrcodeScannerModule extends WXModule {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        Log.d("requestCode", String.valueOf(requestCode));
+        Log.d("-> onActivityResult requestCode", String.valueOf(requestCode));
+        Map<String, Object> response = new HashMap();
 
         if (data != null) {
-            Log.d("response", data.toString());
+            Log.d("-> onActivityResult response", data.toString());
         }
 
         if (requestCode == 101) {
@@ -138,24 +152,24 @@ public class PluginQrcodeScannerModule extends WXModule {
                     Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
                     String qrcode = barcode.displayValue;
 
-                    Log.i(TAG, "onActivityResult: qrcode >>" + qrcode);
+                    Log.i(TAG, "-> onActivityResult: qrcode >>" + qrcode);
                     response.put("code", qrcode);
                     response.put("success", true);
 
-                    Toast.makeText(mWXSDKInstance.getContext(), "Success", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mWXSDKInstance.getContext(), "Success "+response.toString(), Toast.LENGTH_SHORT).show();
                 }
             } else {
                 response.put("code", null);
-                response.put("success", false);
+                response.put("cancel", true);
             }
         } else {
             response.put("code", null);
             response.put("success", false);
         }
 
-        Log.d("response", response.toString());
-
-        this.jsCallback.invoke(response);
+        Log.d("-> response", response.toString());
+        // Log.d("-> onActivityResult jsCallback", this.jsCallback == null);
+        if (this.jsCallback != null) this.jsCallback.invoke(response);
     }
 
 }

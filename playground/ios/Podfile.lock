@@ -1,0 +1,53 @@
+PODS:
+  - ATSDK-Weex (0.0.1)
+  - MTBBarcodeScanner (5.0.11)
+  - PluginQrcodeScanner (0.5.0):
+    - MTBBarcodeScanner
+    - WeexPluginLoader
+    - WeexSDK
+  - SDWebImage (3.7.5):
+    - SDWebImage/Core (= 3.7.5)
+  - SDWebImage/Core (3.7.5)
+  - SocketRocket (0.4.2)
+  - WeexPluginLoader (0.0.1.9.1):
+    - WeexSDK
+  - WeexSDK (0.19.0)
+  - WXDevtool (0.9.5):
+    - WeexSDK
+
+DEPENDENCIES:
+  - ATSDK-Weex (= 0.0.1)
+  - PluginQrcodeScanner (from `../../`)
+  - SDWebImage (= 3.7.5)
+  - SocketRocket (= 0.4.2)
+  - WeexPluginLoader
+  - WeexSDK (= 0.19.0)
+  - WXDevtool (= 0.9.5)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - ATSDK-Weex
+    - MTBBarcodeScanner
+    - SDWebImage
+    - SocketRocket
+    - WeexPluginLoader
+    - WeexSDK
+    - WXDevtool
+
+EXTERNAL SOURCES:
+  PluginQrcodeScanner:
+    :path: "../../"
+
+SPEC CHECKSUMS:
+  ATSDK-Weex: 1b27558f4336d77fb97704d34fc6ad1fd468592c
+  MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
+  PluginQrcodeScanner: 6523d771b898658cef06afca0a7d8c879506f173
+  SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
+  SocketRocket: ffe08119b00ef982f6c37052a4705a057c8494ad
+  WeexPluginLoader: 85c1304f8ba29864e58531614a0acfeceef1b85c
+  WeexSDK: 434995ea3d16efbff5f586b68cb2572df9170f58
+  WXDevtool: 5135a5c6f4426fb635babb9eacfa14352bc66dc6
+
+PODFILE CHECKSUM: 36736c0a76e1e48bb6a223020b12e00ac6d6c5a6
+
+COCOAPODS: 1.5.3
