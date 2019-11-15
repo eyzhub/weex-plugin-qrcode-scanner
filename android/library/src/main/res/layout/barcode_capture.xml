@@ -36,9 +36,8 @@
             android:textColor="#E6E4E5"
             android:textColorHighlight="#64DD17"
             android:textColorLink="#304FFE"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            tools:text="Please scan the QR code" />
+            android:textSize="18sp"
+            tools:text="Scan QR code" />
 
 
     </RelativeLayout>

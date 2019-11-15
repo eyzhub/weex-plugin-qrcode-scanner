@@ -2,98 +2,188 @@
 
 #import "PluginQrcodeScannerModule.h"
 #import <WeexPluginLoader/WeexPluginLoader.h>
+#import <WeexSDK/WXSDKInstance.h>
 
 #import <AVFoundation/AVFoundation.h>
-#import "MTBBarcodeScanner.h"
 
 #define NILABLE(obj) ((obj) != nil ? (NSObject *)(obj) : (NSObject *)[NSNull null])
 
 @implementation PluginQrcodeScannerModule
 
+@synthesize globalCallback;
+@synthesize weexInstance;
 WX_PlUGIN_EXPORT_MODULE(pluginQrcodeScanner, PluginQrcodeScannerModule)
 WX_EXPORT_METHOD(@selector(show:))
-
 /**
- create actionsheet
+ shows alert box
 
- @param options items
+ @param json items
  */
--(void) show: (NSString *)json
-{
+-(void) show: (NSString *)json{
 	NSLog( @"-> show" );
     NSError *jsonError;
     NSData *objectData = [json dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *args = [NSJSONSerialization JSONObjectWithData:objectData  options:NSJSONReadingMutableContainers error:&jsonError];
-    UIAlertView *alertview = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat: @"%@", args[@"title"]] message: args[@"message"] delegate:self cancelButtonTitle:@"cancel" otherButtonTitles:@"dismiss", nil];
-    [alertview show];
-
+    // UIAlertView *alertview = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat: @"%@", args[@"title"]] message: args[@"message"] delegate:self cancelButtonTitle:@"cancel" otherButtonTitles:@"dismiss", nil];
+    UIAlertController *alertview = [UIAlertController
+                alertControllerWithTitle:args[@"title"]
+                message:args[@"message"]
+                preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+                               handler:^(UIAlertAction * action) {}];
+    [alertview addAction:defaultAction];
+    [weexInstance.viewController presentViewController:alertview animated:YES completion:nil];
 }
-WX_EXPORT_METHOD(@selector(scanQR::))
-- (void)scanQR:(NSString *)pid :(IAPCallback)callback {
+
+/**
+ creates the overlay to show the title bar and camera
+
+ @param callback callback
+ */
+WX_EXPORT_METHOD(@selector(scanQR:))
+- (void)scanQR:(WXCallback)callback {
 	NSLog( @"-> scanQR" );
 	NSMutableDictionary *result = [NSMutableDictionary dictionary];
-	// scanner = [[MTBBarcodeScanner alloc] initWithPreviewView:self.previewView];
-//	UINavigationController *nav=[[UINavigationController alloc]initWithRootViewController:vc ];
-//	[[weexInstance.viewController navigationController] presentViewController:nav animated:YES completion:nil];
 
+    globalCallback = callback;
+    // [self show: [NSString stringWithFormat:@"%.20lf"s, weexInstance.viewController.view.frame.size.width] ];
 
-    // self.callBack=callback;
+    UIViewController *vc = [[UIViewController alloc] init];
+    vc.title = @"Scan QR Code";
+    UINavigationController *nav=[[UINavigationController alloc]initWithRootViewController:vc ];
+    nav.navigationBar.barStyle=UIBarStyleBlack;
 
-//     AVCaptureDevice *device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
-//     if (device) {
-//         AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-//         if (status == AVAuthorizationStatusNotDetermined) {
-//             [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-//                 if (granted) {
-//                     // dispatch_sync(dispatch_get_main_queue(), ^{
-//                     //      SGQRCodeScanningVC *vc = [[SGQRCodeScanningVC alloc] init];
-//                     //     UINavigationController *nav=[[UINavigationController alloc]initWithRootViewController:vc ];
-//                     //    nav.navigationBar.barStyle=UIBarStyleBlack;
-//                     //     vc.callBack = self.callBack;
-//                     //     vc.navigationItem.title =title.length?title:@"扫一扫";
-//                     //     [[weexInstance.viewController navigationController] presentViewController:nav animated:YES completion:nil];
-//                     // });
-//                     // 用户第一次同意了访问相机权限
-//                     NSLog(@"用户第一次同意了访问相机权限 - - %@", [NSThread currentThread]);
+    NSUInteger fontSize = 28;
+    UIFont *font = [UIFont boldSystemFontOfSize:fontSize];
+    NSDictionary *attributes = @{NSFontAttributeName: font};
 
-//                 } else {
-//                     // 用户第一次拒绝了访问相机权限
-//                     NSLog(@"用户第一次拒绝了访问相机权限 - - %@", [NSThread currentThread]);
-// //                    self.callBack(@{@"status":@"error",@"msg":@"用户第一次拒绝了访问相机权限"});
-//                 }
-//             }];
-//         } else if (status == AVAuthorizationStatusAuthorized) { // 用户允许当前应用访问相机
-//             // SGQRCodeScanningVC *vc = [[SGQRCodeScanningVC alloc] init];
-//             // UINavigationController *nav=[[UINavigationController alloc]initWithRootViewController:vc ];
-//             //  nav.navigationBar.barStyle=UIBarStyleBlack;
+    UIBarButtonItem *barButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"×"
+        style:UIBarButtonItemStyleDone
+        target:self
+        action:@selector(back:)];
+    [barButtonItem setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    // [barButtonItem setTag: 32];
+    [nav.navigationBar.topItem setLeftBarButtonItem:barButtonItem ];
+    nav.navigationBar.tintColor = [UIColor whiteColor];
 
-//             // vc.callBack = self.callBack;
-//             // vc.navigationItem.title =title.length?title:@"扫一扫";
-//             // [[weexInstance.viewController navigationController] presentViewController:nav animated:YES completion:nil];
-//         } else if (status == AVAuthorizationStatusDenied) { // 用户拒绝当前应用访问相机
-//             UIAlertController *alertC = [UIAlertController alertControllerWithTitle:@"温馨提示" message:@"请去-> [设置 - 隐私 - 相机 - SGQRCodeExample] 打开访问开关" preferredStyle:(UIAlertControllerStyleAlert)];
-//             UIAlertAction *alertA = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
+    CGFloat statusBarHeight = 0;
+    if (@available(iOS 13.0, *)) {
+        statusBarHeight = [UIApplication sharedApplication].keyWindow.windowScene.statusBarManager.statusBarFrame.size.height;
+    } else { // Fallback on earlier versions
+        statusBarHeight = [[UIApplication sharedApplication] statusBarFrame].size.height;
+    }
+    statusBarHeight += nav.navigationBar.frame.size.height;
 
-//             }];
+    NSLog(@"-> Navframe Height=%f", nav.navigationBar.frame.size.height + statusBarHeight);
+    UIView *scanningView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, weexInstance.viewController.view.frame.size.width, weexInstance.viewController.view.frame.size.height + statusBarHeight)];
+    scanningView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.7];
+    [vc.view addSubview:scanningView];
 
-//             [alertC addAction:alertA];
-// //            [[weexInstance.viewController navigationController] presentViewController:alertC animated:YES completion:nil];
-//             // self.callBack(@{@"status":@"error",@"msg":@"用户拒绝当前应用访问相机"});
+    _scanner = [[MTBBarcodeScanner alloc] initWithMetadataObjectTypes:@[AVMetadataObjectTypeQRCode] previewView:scanningView];
 
-//         } else if (status == AVAuthorizationStatusRestricted) {
-//             NSLog(@"因为系统原因, 无法访问相册");
-//              // self.callBack(@{@"status":@"error",@"msg":@"因为系统原因, 无法访问相册"});
-//         }
-//     } else {
-//         UIAlertController *alertC = [UIAlertController alertControllerWithTitle:@"温馨提示" message:@"未检测到您的摄像头" preferredStyle:(UIAlertControllerStyleAlert)];
-//         UIAlertAction *alertA = [UIAlertAction actionWithTitle:@"确定" style:(UIAlertActionStyleDefault) handler:^(UIAlertAction * _Nonnull action) {
-
-//         }];
-
-//         [alertC addAction:alertA];
-// //        [[weexInstance.viewController navigationController] presentViewController:alertC animated:YES completion:nil];
-//        // self.callBack(@{@"status":@"error",@"msg":@"未检测到您的摄像头"});
-//     }
-	callback(@{@"result": result});
+    [MTBBarcodeScanner requestCameraPermissionWithSuccess:^(BOOL success) {
+        NSLog( @"-> scanQR requestCameraPermissionWithSuccess %d", success );
+        if (success) {
+            [[weexInstance.viewController navigationController] presentViewController:nav animated:YES completion:nil];
+            [self startScanning];
+        } else {
+            [self displayPermissionMissingAlert];
+        }
+    }];
 }
+
+/**
+ Configures the back buttons of the UIview
+
+ @param callback callback
+ */
+- (void) back:(UIBarButtonItem *)sender {
+    NSLog(@"-> Back");
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    [self stopScanning];
+    result[@"cancel"] = @YES;
+    globalCallback(result);
+}
+
+/**
+ Displays an alerts allowomg the user to go to the app settings privacy page of the camera
+
+ */
+- (void)displayPermissionMissingAlert {
+    NSString *message = nil;
+    NSLog( @"-> displayPermissionMissingAlert" );
+
+    if ([MTBBarcodeScanner scanningIsProhibited]) {
+        message = @"This App Would like to Access the Camera";
+    } else if (![MTBBarcodeScanner cameraIsPresent]) {
+        message = @"This device does not have a camera.";
+    } else {
+        message = @"An unknown error occurred.";
+    }
+    NSLog( @"-> displayPermissionMissingAlert message %@", message );
+
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:message message:@"" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *action = [UIAlertAction 
+        actionWithTitle:@"Don't Allow" 
+        style:UIAlertActionStyleDefault 
+        handler:^(UIAlertAction * action) {
+            NSMutableDictionary *result = [NSMutableDictionary dictionary];
+            result[@"cancel"] = @YES;
+            globalCallback(result);
+        }];
+    [alertController addAction:action];
+    UIAlertAction *settingsAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+        handler: ^(UIAlertAction * action) {
+            // Take the user to Settings app to possibly change permission.
+            BOOL canOpenSettings = (&UIApplicationOpenSettingsURLString != NULL);
+            if (canOpenSettings) {
+                NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                if (@available(iOS 10.0, *)) {
+                    [[UIApplication sharedApplication] openURL:url options:[NSMutableDictionary dictionary] completionHandler: nil];
+                } else {
+                    // Fallback on earlier versions
+                    [[UIApplication sharedApplication] openURL:url];
+                }
+            }
+        }
+    ];
+    [alertController addAction:settingsAction];
+    [weexInstance.viewController presentViewController:alertController animated:YES completion:nil];
+}
+
+/**
+ Starts scanning the camera image for QR codes
+
+ */
+- (void)startScanning {
+    NSError *error = nil;
+    NSMutableDictionary *result = [NSMutableDictionary dictionary];
+    [self.scanner startScanningWithResultBlock:^(NSArray *codes) {
+       for (AVMetadataMachineReadableCodeObject *code in codes) {
+           NSLog(@"-> Found unique code: %@", code.stringValue);
+           result[@"code"] = code.stringValue;
+           result[@"success"] = @YES;
+           globalCallback(result);
+           [self stopScanning];
+           return;
+       }
+    } error:&error];
+
+    if (error) {
+        NSLog(@"An error occurred: %@", error.localizedDescription);
+    }
+}
+
+/**
+ Stops scanning the camera for QR codes
+
+ */
+- (void)stopScanning {
+    [self.scanner stopScanning];
+    [[weexInstance.viewController navigationController] dismissViewControllerAnimated:YES completion:Nil];
+
+}
+
+
+
 @end

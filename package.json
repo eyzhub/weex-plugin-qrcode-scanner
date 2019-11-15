@@ -1,6 +1,6 @@
 {
   "name": "plugin-qrcode-scanner",
-  "version": "1.0.0",
+  "version": "0.5.0",
   "description": "Weex QR code scanner for Android and iOS. ",
   "author": "Phani Saripalli <saripalli.phani@gmail.com>",
   "scripts": {

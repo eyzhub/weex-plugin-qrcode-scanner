@@ -25,12 +25,11 @@
 		methods: {
 			showDialog: function() {
 				console.log('-> showDialog')
-				// weexPluginInapp.show();
 				pluginQrcodeScanner.show(JSON.stringify({title: 'QR Code Scanner', message: weex.config.env.osName+' Module pluginQrcodeScanner was created sucessfully'}));
 			},
 			scanQR: function() {
 				console.log('-> scanQR')
-				pluginQrcodeScanner.scanQR('pluginQrcodeScanner', (data) => {
+				pluginQrcodeScanner.scanQR((data) => {
 					this.response = data
 				})
 			}

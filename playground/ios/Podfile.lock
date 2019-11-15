@@ -1,7 +1,7 @@
 PODS:
   - ATSDK-Weex (0.0.1)
   - MTBBarcodeScanner (5.0.11)
-  - PluginQrcodeScanner (0.1.0):
+  - PluginQrcodeScanner (0.5.0):
     - MTBBarcodeScanner
     - WeexPluginLoader
     - WeexSDK
@@ -41,7 +41,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   ATSDK-Weex: 1b27558f4336d77fb97704d34fc6ad1fd468592c
   MTBBarcodeScanner: f453b33c4b7dfe545d8c6484ed744d55671788cb
-  PluginQrcodeScanner: e3280ec67126b5f8d0de9c587f6cf8ce515c2bff
+  PluginQrcodeScanner: 6523d771b898658cef06afca0a7d8c879506f173
   SDWebImage: 69c6303e3348fba97e03f65d65d4fbc26740f461
   SocketRocket: ffe08119b00ef982f6c37052a4705a057c8494ad
   WeexPluginLoader: 85c1304f8ba29864e58531614a0acfeceef1b85c
